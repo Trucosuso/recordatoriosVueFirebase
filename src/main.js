@@ -10,6 +10,12 @@ import "bootstrap-vue/dist/bootstrap-vue.css"
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
+// Add firestore from vuefire
+import { firestorePlugin } from "vuefire";
+
+// Use firestore
+Vue.use(firestorePlugin);
+
 
 Vue.config.productionTip = false
 
