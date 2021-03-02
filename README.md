@@ -1,24 +1,13 @@
-# lista-notas-vue-firebase
+# Recordatorios
 
-## Project setup
+Lista de recordatorios con prioridad para las notas. Permite filtrar notas.
+
+Hecho con VueJS y Firebase como backend.
+
+Versión en producción: https://lista-notas-firebase.web.app/
+
+## Para trabajar con el proyecto
+Ejecutar
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
