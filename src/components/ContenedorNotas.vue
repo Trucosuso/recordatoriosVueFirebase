@@ -87,13 +87,16 @@ export default {
     mounted() {},
     methods: {
         anadirNota: function() {
-            db.collection("notas").add({
-                titulo: this.nuevaNota,
-                prioridad: 0,
-                fechaCreacion: Date.now(),
-                completado: false
-            });
-            this.nuevaNota = "";
+            // Si el texto del input tiene contenido añade la nueva nota
+            if (/\S/.test(this.nuevaNota)) {
+                db.collection("notas").add({
+                    titulo: this.nuevaNota,
+                    prioridad: 0,
+                    fechaCreacion: Date.now(),
+                    completado: false
+                });
+                this.nuevaNota = "";
+            }
         },
         borrarNota: function(id) {
             db.collection("notas").doc(id).delete();
