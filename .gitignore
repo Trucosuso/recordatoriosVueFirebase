@@ -5,6 +5,9 @@ node_modules
 
 # Firebase config
 firebaseSecret.js
+# Firebase hosting
+.firebaserc
+.firebase
 
 # local env files
 .env.local
