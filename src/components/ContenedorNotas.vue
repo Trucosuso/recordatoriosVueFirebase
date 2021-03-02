@@ -42,7 +42,7 @@
             </b-row>
             <Nota
                 v-for="nota in listaOrdenada"
-                :key="nota.fechaCreacion.toString()"
+                :key="nota.id"
                 :dato-nota="nota"
                 :nota-a-editar="notaAEditar"
                 @borrarNota="borrarNota"
@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { db } from "../db.js";
 import Nota from "./Nota.vue";
 
 export default {
@@ -68,7 +69,7 @@ export default {
         return {
             listaNotas: [],
             nuevaNota: "",
-            notaAEditar: null,
+            notaAEditar: "",
             filtroNota: ""
         };
     },
@@ -94,46 +95,46 @@ export default {
             });
         }
     },
-    mounted() {
-        if (localStorage.listaNotas) {
-            this.listaNotas = JSON.parse(localStorage.listaNotas);
-        }
-    },
+    mounted() {},
     methods: {
-        actualizarLocalStorage: function() {
-            localStorage.listaNotas = JSON.stringify(this.listaNotas);
-        },
         anadirNota: function() {
-            this.listaNotas.push({
+            db.collection("notas").add({
                 titulo: this.nuevaNota,
                 prioridad: 0,
                 fechaCreacion: Date.now(),
                 completado: false
             });
             this.nuevaNota = "";
-            this.actualizarLocalStorage();
         },
-        borrarNota: function(fechaCreacion) {
-            let posicion = this.listaNotas.findIndex(
-                nota => nota.fechaCreacion == fechaCreacion
-            );
-            this.listaNotas.splice(posicion, 1);
-            this.actualizarLocalStorage();
+        borrarNota: function(id) {
+            db.collection("notas").doc(id).delete();
         },
-        iniciarEdicion: function(date) {
-            this.notaAEditar = date;
+        iniciarEdicion: function(id) {
+            this.notaAEditar = id;
         },
         cancelarEdicion: function() {
-            this.notaAEditar = null;
+            this.notaAEditar = "";
         },
-        terminarEdicion: function() {
+        terminarEdicion: function(nota) {
             this.cancelarEdicion();
-            this.actualizarLocalStorage();
+            this.notaEditada(nota);
         },
-        notaEditada: function() {
-            this.actualizarLocalStorage();
+        notaEditada: function(nota) {
+            db.collection("notas")
+                .doc(nota.id)
+                .update({
+                    titulo: nota.titulo,
+                    prioridad: nota.prioridad,
+                    completado: nota.completado
+                })
+                .then(() => {
+                    console.log("Nota actualizada a " + nota.titulo + "con prioridad " + nota.prioridad);
+                });
         }
-    }
+    },
+    firestore: {
+        listaNotas: db.collection("notas"),
+    },
 };
 </script>
 

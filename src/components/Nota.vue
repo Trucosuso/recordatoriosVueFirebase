@@ -14,7 +14,7 @@
                     order-md="1"
                 >
                     <b-input
-                        v-if="notaAEditar === datoNota.fechaCreacion"
+                        v-if="notaAEditar === datoNota.id"
                         v-model="datoNota.titulo"
                         type="text"
                         @keyup.enter="terminarEdicion"
@@ -57,7 +57,7 @@
             class="d-flex justify-content-start justify-content-md-end"
         >
             <b-button
-                v-if="notaAEditar === datoNota.fechaCreacion"
+                v-if="notaAEditar === datoNota.id"
                 @click="cancelarEdicion"
             >
                 Cancelar
@@ -89,6 +89,7 @@ export default {
             type: Object,
             default: function() {
                 return {
+                    id: "",
                     titulo: "",
                     prioridad: 0,
                     fechaCreacion: 0,
@@ -97,8 +98,8 @@ export default {
             }
         },
         notaAEditar: {
-            type: Number,
-            default: 0
+            type: String,
+            default: ""
         }
     },
     data() {
@@ -138,18 +139,18 @@ export default {
     mounted() {},
     methods: {
         borrarNota: function() {
-            this.$emit("borrarNota", this.datoNota.fechaCreacion);
+            this.$emit("borrarNota", this.datoNota.id);
         },
         iniciarEdicion: function() {
             this.tituloBackup = this.datoNota.titulo;
-            this.$emit("iniciarEdicion", this.datoNota.fechaCreacion);
+            this.$emit("iniciarEdicion", this.datoNota.id);
         },
         cancelarEdicion: function() {
             this.datoNota.titulo = this.tituloBackup;
             this.$emit("cancelarEdicion");
         },
         terminarEdicion: function() {
-            this.$emit("terminarEdicion");
+            this.$emit("terminarEdicion", this.datoNota);
         },
         cambiarPrioridad: function() {
             if (this.datoNota.prioridad >= 3) {
@@ -157,11 +158,11 @@ export default {
             } else {
                 this.datoNota.prioridad++;
             }
-            this.$emit("notaEditada");
+            this.$emit("notaEditada", this.datoNota);
         },
         cambiarCompletado: function() {
             this.datoNota.completado = !this.datoNota.completado;
-            this.$emit("notaEditada");
+            this.$emit("notaEditada", this.datoNota);
         }
     }
 };
