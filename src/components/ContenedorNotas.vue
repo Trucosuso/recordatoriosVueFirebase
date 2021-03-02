@@ -41,7 +41,7 @@
                 </b-form>
             </b-row>
             <Nota
-                v-for="nota in listaOrdenada"
+                v-for="nota in listaFiltrada"
                 :key="nota.id"
                 :dato-nota="nota"
                 :nota-a-editar="notaAEditar"
@@ -82,17 +82,6 @@ export default {
             } else {
                 return this.listaNotas;
             }
-        },
-        listaOrdenada: function() {
-            let listaOrdenada = this.listaFiltrada;
-            return listaOrdenada.sort((a, b) => {
-                if (a.fechaCreacion < b.fechaCreacion) {
-                    return 1;
-                } else if (a.fechaCreacion > b.fechaCreacion) {
-                    return -1;
-                }
-                return 0;
-            });
         }
     },
     mounted() {},
@@ -133,7 +122,7 @@ export default {
         }
     },
     firestore: {
-        listaNotas: db.collection("notas"),
+        listaNotas: db.collection("notas").orderBy("fechaCreacion", "asc"),
     },
 };
 </script>
