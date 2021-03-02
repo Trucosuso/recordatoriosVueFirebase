@@ -65,6 +65,7 @@
             <b-button
                 v-else
                 variant="outline-dark"
+                :disabled="datoNota.completado"
                 @click="iniciarEdicion"
             >
                 Editar
