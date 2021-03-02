@@ -3,6 +3,9 @@ node_modules
 /dist
 
 
+# Firebase config
+firebaseSecret.js
+
 # local env files
 .env.local
 .env.*.local
