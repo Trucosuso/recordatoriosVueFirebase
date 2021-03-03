@@ -17,9 +17,46 @@ import { firestorePlugin } from "vuefire";
 Vue.use(firestorePlugin);
 
 
+// Add Vue Router
+import VueRouter from "vue-router"
+
+// Use Vue Router
+Vue.use(VueRouter)
+
+// Import components to use in routes
+import ContenedorNotas from "./components/ContenedorNotas.vue";
+Vue.component(ContenedorNotas);
+import LoginScreen from "./components/LoginScreen.vue";
+Vue.component(LoginScreen);
+
+const routes = [
+    { path: "/", component: LoginScreen },
+    { path: "/notas", component: ContenedorNotas, meta: { requiresAuth: false } },
+];
+
+const router = new VueRouter({
+    routes,
+});
+
+// Check if the user us authenticated to allow access to todos
+import Firebase from "./db.js"
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (!Firebase.auth.currentUser) {
+            next("/");
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+})
+
+
 Vue.config.productionTip = false
 
 // eslint-disable-next-line vue/require-name-property
 new Vue({
-  render: h => h(App),
+    render: h => h(App),
+    router,
 }).$mount("#app")
