@@ -12,12 +12,17 @@
                         label-for="textoNuevaNota"
                         description="Introduce el texto de la nueva nota"
                     >
-                        <b-form-input
-                            id="textoNuevaNota"
-                            v-model="nuevaNota"
-                            type="text"
-                            @keyup.enter="anadirNota"
-                        />
+                        <b-input-group>
+                            <b-form-input
+                                id="textoNuevaNota"
+                                v-model="nuevaNota"
+                                type="text"
+                                @keyup.enter="anadirNota"
+                            />
+                            <b-input-group-append>
+                                <b-button @click="anadirNota">Añadir</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
                     </b-form-group>
                 </b-form>
             </b-row>
