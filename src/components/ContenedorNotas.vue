@@ -40,7 +40,7 @@
                     cols="12"
                     md="6"
                 >
-                    <p 
+                    <p
                         class="text-danger font-weight-bold texto-borrar-tareas"
                         @click="borrarTareasCompletadas"
                     >
@@ -161,7 +161,7 @@ export default {
             texto += " de un total de " + this.tareasTotales + ".";
             return texto;
         },
-        hayTareasCompletadas: function () {
+        hayTareasCompletadas: function() {
             return this.tareasPendientes - this.tareasTotales;
         }
     },
@@ -171,9 +171,7 @@ export default {
                 this.user.loggedIn = true;
                 this.user.data = user;
                 this.$bind(
-                    "listaNotas",
-                    db
-                        .collection("notas")
+                    "listaNotas", db.collection("notas")
                         .where("userID", "==", Firebase.auth.currentUser.uid)
                 );
             } else {
@@ -234,7 +232,7 @@ export default {
         cerrarSesion: function() {
             Firebase.logout();
         },
-        borrarTareasCompletadas: function () {
+        borrarTareasCompletadas: function() {
             this.listaNotas.forEach(nota => {
                 if (nota.completado == true) {
                     this.borrarNota(nota.id);
@@ -245,11 +243,7 @@ export default {
     firestore: {
         listaNotas: db
             .collection("notas")
-            .where(
-                "userID",
-                "==",
-                Firebase.auth.currentUser ? Firebase.auth.currentUser.uid : ""
-            )
+            .where("userID", "==", Firebase.auth.currentUser ? Firebase.auth.currentUser.uid : "")
     }
 };
 </script>

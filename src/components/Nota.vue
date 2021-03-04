@@ -60,9 +60,12 @@
                         />
                     </b-button>
                 </b-col>
-                <b-col order-md="3" cols="12">
+                <b-col
+                    order-md="3"
+                    cols="12"
+                >
                     <p class="text-muted mb-0">
-                        Creada 
+                        Creada
                         <timeago
                             :datetime="datoNota.fechaCreacion"
                             :auto-update="60"
@@ -191,11 +194,11 @@ export default {
 
 <style scoped>
 .nota-texto {
-  padding: 0.43rem;
-  cursor: pointer;
+    padding: 0.43rem;
+    cursor: pointer;
 }
 
 .completado {
-  text-decoration: line-through;
+    text-decoration: line-through;
 }
 </style>
