@@ -51,6 +51,21 @@
                 @terminarEdicion="terminarEdicion"
                 @notaEditada="notaEditada"
             />
+            <b-row>
+                <b-col
+                    class="mt-5"
+                    cols="12"
+                    md="6"
+                >
+                    <b-button
+                        class="w-100"
+                        size="lg"
+                        @click="cerrarSesion"
+                    >
+                        Cerrar sesión
+                    </b-button>
+                </b-col>
+            </b-row>
         </b-container>
     </section>
 </template>
@@ -58,6 +73,8 @@
 <script>
 import { db } from "../db.js";
 import Nota from "./Nota.vue";
+import Firebase from "../db.js";
+
 
 export default {
     name: "ContenedorNotas",
@@ -70,7 +87,11 @@ export default {
             listaNotas: [],
             nuevaNota: "",
             notaAEditar: "",
-            filtroNota: ""
+            filtroNota: "",
+            user: {
+                loggedIn: false,
+                data: {},
+            }
         };
     },
     computed: {
@@ -82,9 +103,29 @@ export default {
             } else {
                 return this.listaNotas;
             }
-        }
+        },
+        uid: function () {
+            if (this.user.data.uid) {
+                return this.user.data.uid;
+            }
+            return null;
+        },
     },
-    mounted() {},
+    mounted() {
+        Firebase.auth.onAuthStateChanged((user) => {
+            if (user) {
+                this.user.loggedIn = true;
+                this.user.data = user;
+                this.$bind("listaNotas",db.collection("notas").where("userID", "==",  Firebase.auth.currentUser.uid));
+            } else {
+                this.user.loggedIn = false;
+                this.user.data = {};
+                if (this.$route.path != "/") {
+                    this.$router.push("/");
+                }
+            }
+        });
+    },
     methods: {
         anadirNota: function() {
             // Si el texto del input tiene contenido añade la nueva nota
@@ -93,7 +134,8 @@ export default {
                     titulo: this.nuevaNota,
                     prioridad: 0,
                     fechaCreacion: Date.now(),
-                    completado: false
+                    completado: false,
+                    userID: this.uid
                 });
                 this.nuevaNota = "";
             }
@@ -122,10 +164,13 @@ export default {
                 .then(() => {
                     console.log("Nota actualizada a " + nota.titulo + "con prioridad " + nota.prioridad);
                 });
-        }
+        },
+        cerrarSesion: function () {
+            Firebase.logout();
+        },
     },
     firestore: {
-        listaNotas: db.collection("notas").orderBy("fechaCreacion", "asc"),
+        listaNotas: db.collection("notas").where("userID", "==", Firebase.auth.currentUser ? Firebase.auth.currentUser.uid: "")
     },
 };
 </script>
