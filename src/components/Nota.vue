@@ -25,6 +25,18 @@
                         :class="{ completado: datoNota.completado }"
                         @click="cambiarCompletado"
                     >
+                        <b-icon
+                            v-if="datoNota.completado"
+                            icon="check2-circle"
+                            font-scale="1.5"
+                            class="align-bottom"
+                        />
+                        <b-icon
+                            v-else
+                            font-scale="1.25"
+                            icon="circle"
+                            class="align-center"
+                        />
                         {{ datoNota.titulo }}
                     </p>
                 </b-col>
