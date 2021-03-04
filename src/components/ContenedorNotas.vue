@@ -20,12 +20,39 @@
                                 @keyup.enter="anadirNota"
                             />
                             <b-input-group-append>
-                                <b-button @click="anadirNota">Añadir</b-button>
+                                <b-button @click="anadirNota">
+                                    Añadir
+                                </b-button>
                             </b-input-group-append>
                         </b-input-group>
                     </b-form-group>
                 </b-form>
             </b-row>
+            <b-row>
+                <b-col
+                    cols="12"
+                    md="6"
+                >
+                    <p>{{ tareasPendientesTexto }}</p>
+                </b-col>
+                <b-col
+                    v-if="hayTareasCompletadas"
+                    cols="12"
+                    md="6"
+                >
+                    <p 
+                        class="text-danger font-weight-bold texto-borrar-tareas"
+                        @click="borrarTareasCompletadas"
+                    >
+                        <b-icon
+                            icon="trash"
+                            font-scale="1.3"
+                        />
+                        Eliminar tareas completadas
+                    </p>
+                </b-col>
+            </b-row>
+            <hr class="mt-1 mb-1">
             <b-row>
                 <b-form
                     class="w-100"
@@ -56,9 +83,9 @@
                 @terminarEdicion="terminarEdicion"
                 @notaEditada="notaEditada"
             />
+            <hr class="mt-5 mb-4">
             <b-row>
                 <b-col
-                    class="mt-5"
                     cols="12"
                     md="6"
                 >
@@ -80,7 +107,6 @@ import { db } from "../db.js";
 import Nota from "./Nota.vue";
 import Firebase from "../db.js";
 
-
 export default {
     name: "ContenedorNotas",
     components: {
@@ -95,7 +121,7 @@ export default {
             filtroNota: "",
             user: {
                 loggedIn: false,
-                data: {},
+                data: {}
             }
         };
     },
@@ -109,19 +135,47 @@ export default {
                 return this.listaNotas;
             }
         },
-        uid: function () {
+        uid: function() {
             if (this.user.data.uid) {
                 return this.user.data.uid;
             }
             return null;
         },
+        tareasTotales: function() {
+            return this.listaNotas.length;
+        },
+        tareasPendientes: function() {
+            return this.listaNotas.reduce(
+                (i, nota) => (nota.completado == false ? ++i : i),
+                0
+            );
+        },
+        tareasPendientesTexto: function() {
+            // Quedan {{tareasPendientes}} tareas pendientes de un total de {{tareasTotales}}.
+            let texto = "Tiene " + this.tareasPendientes;
+            if (this.tareasPendientes == 1) {
+                texto += " tarea pendiente ";
+            } else {
+                texto += " tareas pendientes ";
+            }
+            texto += " de un total de " + this.tareasTotales + ".";
+            return texto;
+        },
+        hayTareasCompletadas: function () {
+            return this.tareasPendientes - this.tareasTotales;
+        }
     },
     mounted() {
-        Firebase.auth.onAuthStateChanged((user) => {
+        Firebase.auth.onAuthStateChanged(user => {
             if (user) {
                 this.user.loggedIn = true;
                 this.user.data = user;
-                this.$bind("listaNotas",db.collection("notas").where("userID", "==",  Firebase.auth.currentUser.uid));
+                this.$bind(
+                    "listaNotas",
+                    db
+                        .collection("notas")
+                        .where("userID", "==", Firebase.auth.currentUser.uid)
+                );
             } else {
                 this.user.loggedIn = false;
                 this.user.data = {};
@@ -146,7 +200,9 @@ export default {
             }
         },
         borrarNota: function(id) {
-            db.collection("notas").doc(id).delete();
+            db.collection("notas")
+                .doc(id)
+                .delete();
         },
         iniciarEdicion: function(id) {
             this.notaAEditar = id;
@@ -167,21 +223,43 @@ export default {
                     completado: nota.completado
                 })
                 .then(() => {
-                    console.log("Nota actualizada a " + nota.titulo + "con prioridad " + nota.prioridad);
+                    console.log(
+                        "Nota actualizada a " +
+                            nota.titulo +
+                            "con prioridad " +
+                            nota.prioridad
+                    );
                 });
         },
-        cerrarSesion: function () {
+        cerrarSesion: function() {
             Firebase.logout();
         },
+        borrarTareasCompletadas: function () {
+            this.listaNotas.forEach(nota => {
+                if (nota.completado == true) {
+                    this.borrarNota(nota.id);
+                }
+            });
+        }
     },
     firestore: {
-        listaNotas: db.collection("notas").where("userID", "==", Firebase.auth.currentUser ? Firebase.auth.currentUser.uid: "")
-    },
+        listaNotas: db
+            .collection("notas")
+            .where(
+                "userID",
+                "==",
+                Firebase.auth.currentUser ? Firebase.auth.currentUser.uid : ""
+            )
+    }
 };
 </script>
 
 <style scoped>
 .contenedor-notas {
     margin: 1rem;
+}
+
+.texto-borrar-tareas {
+    cursor: pointer;
 }
 </style>
